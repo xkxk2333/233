@@ -1,0 +1,348 @@
+/* style.css (完整版 - 20231028 更新) */
+:root {
+    --item-common-color: #b0bec5;
+    --item-uncommon-color: #68d391;
+    --item-rare-color: #63b3ed;
+    --item-epic-color: #b794f4;
+    --item-legendary-color: #f6e05e;
+    --text-color: #e0e0e0;
+    --text-muted-color: #a0aec0;
+    --text-darker-muted-color: #718096;
+    --bg-dark-1: #1a1a1a; /* Page background */
+    --bg-dark-2: #2c2c2c; /* Main container background */
+    --bg-dark-3: #3a3a3a; /* Cards, sections, active tabs background */
+    --bg-dark-4: #4a5568; /* Default button background */
+    --accent-color: #61dafb;
+    --danger-color: #f56565;
+    --success-color: #68d391;
+    --warning-color: #ffd54f; /* Yellow for light injuries or warnings */
+    --border-color-light: #555;
+    --border-color-dark: #444;
+    --border-color-very-dark: #111;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif, 'Microsoft YaHei', 'SimSun';
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-dark-1);
+    color: var(--text-color);
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased; /* Improve font rendering */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#game-container {
+    width: 100%;
+    max-width: 420px;
+    min-height: 95vh;
+    background-color: var(--bg-dark-2);
+    border: 1px solid var(--border-color-dark);
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+}
+
+.screen {
+    padding: 15px 20px; /* Slightly more horizontal padding */
+    box-sizing: border-box;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.screen.hidden { display: none !important; }
+
+/* General Headers */
+header {
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color-light);
+    flex-shrink: 0;
+}
+header h1, header h2 {
+    margin: 5px 0 10px;
+    color: var(--accent-color);
+    text-align: center;
+    font-weight: 600; /* Slightly bolder */
+    letter-spacing: 0.5px;
+}
+.player-stats-bar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin-bottom: 12px;
+    background-color: var(--bg-dark-3);
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: var(--text-muted-color);
+    border: 1px solid var(--border-color-dark);
+}
+.player-stats-bar span span { color: var(--text-color); font-weight: bold; }
+
+/* Buttons */
+button {
+    background-color: var(--bg-dark-4);
+    color: white;
+    border: none;
+    padding: 11px 18px; /* Slightly larger padding */
+    margin: 8px 0;
+    border-radius: 6px; /* Slightly more rounded */
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500; /* Medium weight */
+    transition: background-color 0.15s ease, transform 0.1s ease;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    letter-spacing: 0.3px;
+}
+button:hover { background-color: #5a6678; } /* Darken on hover */
+button:active { transform: translateY(1px) scale(0.98); background-color: #2d3748; }
+button:disabled {
+    background-color: #718096 !important; /* Ensure disabled style overrides */
+    color: var(--text-darker-muted-color) !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none !important;
+}
+
+.cta-button { background-color: var(--success-color); }
+.cta-button:hover { background-color: #2f855a; }
+.danger-button { background-color: var(--danger-color); }
+.danger-button:hover { background-color: #c53030; }
+.warning-button { background-color: var(--warning-color); color: var(--bg-dark-1); }
+.warning-button:hover { background-color: #ddb341; }
+
+
+.back-button {
+    position: absolute; /* Position relative to header or screen */
+    top: 15px; /* Adjust as needed */
+    right: 15px;
+    width: auto;
+    padding: 7px 10px;
+    background-color: var(--text-darker-muted-color);
+    font-size: 0.85em;
+    margin-top: 0; /* Override default margin */
+    z-index: 10; /* Ensure it's above other header content if overlapping */
+}
+header { position: relative; } /* Needed for absolute positioning of back-button within header */
+
+
+/* Main Screen */
+.character-display-area {
+    text-align: center; padding: 25px 20px; background-color: var(--bg-dark-3);
+    border-radius: 6px; margin-bottom: 20px; flex-shrink: 0; border: 1px solid var(--border-color-dark);
+}
+.quick-equip-slots span { margin: 0 12px; font-size: 0.9em; color: var(--text-muted-color); }
+.quick-equip-slots span span { color: var(--text-color); }
+.main-actions { display: flex; flex-direction: column; gap: 8px; }
+.fishing-area {
+    text-align: center; font-style: italic; color: var(--text-muted-color); margin-top: 20px;
+    padding: 12px; background-color: var(--bg-dark-3); border-radius: 4px; font-size: 0.9em;
+}
+
+/* Tab System (Warehouse, Market, Progression, Mission Loot) */
+.warehouse-tabs, .market-tabs, .mission-loot-tabs, .progression-tabs {
+    display: flex; margin-bottom: 0; /* Remove bottom margin, content will have padding */
+    flex-wrap: wrap; border-bottom: 1px solid var(--border-color-light); flex-shrink: 0;
+}
+.tab-button {
+    flex-grow: 1; flex-basis: 0; /* Equal width tabs */
+    min-width: 75px; background-color: #444; /* Slightly lighter inactive tab */
+    border-radius: 6px 6px 0 0; border-bottom: none; /* Remove bottom border for buttons */
+    margin: 0 2px 0 0; padding: 9px 10px; font-size: 0.8em; /* Smaller font for tabs */
+    color: var(--text-muted-color); border:none; width: auto; font-weight: 500;
+    border: 1px solid transparent; border-bottom: none; /* For better active state */
+}
+.tab-button:last-child { margin-right: 0; }
+.tab-button.active {
+    background-color: var(--bg-dark-3); border-color: var(--border-color-light);
+    border-bottom-color: var(--bg-dark-3); /* Match content bg */
+    color: var(--accent-color); font-weight: bold; position: relative; top: 1px; /* Slight lift */
+}
+.tab-content {
+    padding: 15px 20px; background-color: var(--bg-dark-3);
+    border-radius: 0 0 6px 6px; flex-grow: 1; overflow-y: auto;
+    border: 1px solid var(--border-color-light); border-top: none; /* Match active tab border */
+}
+.tab-content h3 { margin-top: 0; color: var(--accent-color); border-bottom: 1px solid var(--border-color-dark); padding-bottom: 8px; margin-bottom: 12px; font-size: 1.1em;}
+.tab-content h4 { margin-top: 15px; margin-bottom: 8px; color: var(--text-muted-color); font-size: 0.95em; }
+.tab-content ul { list-style: disc; margin-left: 20px; padding-left: 5px; }
+.tab-content li { margin-bottom: 6px; font-size: 0.95em;}
+.tab-content .small-text { font-size: 0.85em; color: var(--text-muted-color); margin-top:12px;}
+
+
+/* Item Grid & List */
+.item-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+    gap: 10px; padding: 12px; min-height: 100px;
+    background-color: var(--bg-dark-2); border-radius: 4px; border: 1px solid var(--border-color-very-dark);
+}
+.grid-item {
+    background-color: var(--bg-dark-4); border: 1px solid #5a5a5a; height: 75px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; font-size: 0.7em; cursor: pointer; position: relative;
+    overflow: hidden; padding: 5px; box-sizing: border-box; border-radius: 4px;
+    border-left-width: 4px; border-left-style: solid; border-left-color: transparent;
+}
+.grid-item:hover { border-color: var(--accent-color); background-color: #5a6678; }
+.grid-item .item-name { z-index: 1; font-weight: bold; margin-bottom: 3px; width: 100%; word-break: break-word; font-size: 1.1em; line-height: 1.2;}
+.grid-item .item-quantity {
+    position: absolute; bottom: 4px; right: 4px; font-size: 1.2em;
+    background-color: rgba(0,0,0,0.75); padding: 2px 5px; border-radius: 3px; line-height: 1;
+}
+
+.item-list { list-style: none; padding: 0; margin: 0; }
+.item-list li, .market-list-item {
+    background-color: var(--bg-dark-4); padding: 10px 12px; margin-bottom: 8px;
+    border-radius: 4px; cursor: pointer; display: flex; justify-content: space-between;
+    align-items: center; border-left: 4px solid transparent;
+}
+.item-list li:hover, .market-list-item:hover { background-color: #5a6678; }
+.market-list-item button { width: auto; font-size: 0.85em; padding: 6px 10px; margin-left: 10px;}
+
+
+/* Warehouse */
+#player-equipment-slots div {
+    margin-bottom: 8px; padding: 10px; background-color: #333;
+    border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 0.95em;
+}
+#player-equipment-slots .slot-name { color: var(--text-muted-color); margin-right: 8px; }
+#player-equipment-slots .item-equipped-name { color: var(--text-color); font-weight: bold; flex-grow: 1; text-align: left; }
+#player-equipment-slots .unequip-btn { width: auto; font-size: 0.8em; padding: 5px 8px; margin-left: 10px;}
+#detailed-stats-panel { background-color: #222; padding: 15px; margin-top: 12px; border-radius: 4px; border: 1px solid var(--border-color-very-dark);}
+#detailed-stats-panel p { margin: 6px 0; font-size: 0.95em; }
+#detailed-stats-panel span { font-weight: bold; color: var(--accent-color); }
+
+
+/* World Selection */
+#world-list .world-entry-card {
+    background-color: var(--bg-dark-3); padding: 18px 20px; margin-bottom: 12px;
+    border-radius: 6px; border-left: 5px solid var(--accent-color); cursor: default;
+}
+.world-entry-card h3 { margin-top: 0; color: var(--accent-color); font-size: 1.15em; } /* Brighter title */
+.world-entry-card p { margin: 6px 0; font-size: 0.9em; color: var(--text-muted-color); }
+.world-entry-card p span { color: var(--text-color); }
+.world-entry-card .difficulty-buttons { margin-top: 12px; }
+.world-entry-card .difficulty-buttons button { width: auto; margin-right: 8px; font-size: 0.9em; padding: 7px 12px; background-color: #5a6678;}
+.world-entry-card .difficulty-buttons button:hover { background-color: var(--bg-dark-4); }
+
+
+/* Preparation Screen */
+.prep-sections section { background-color: var(--bg-dark-3); padding: 18px; border-radius: 4px; margin-bottom: 12px; }
+.prep-sections h3 { margin-top: 0; border-bottom: 1px solid var(--border-color-dark); padding-bottom: 8px; color: var(--accent-color); font-size: 1.1em;}
+.prep-sections p { margin: 8px 0; font-size: 0.95em; }
+.prep-sections p span { font-weight: bold; color: var(--text-color); }
+
+
+/* Map Screen */
+.map-header { background-color: #333; padding: 10px 15px; border-radius: 4px 4px 0 0; flex-shrink: 0; border-bottom: 1px solid var(--border-color-dark); }
+.player-map-status { font-size: 0.9em; color: var(--text-muted-color); }
+.player-map-status span { color: var(--text-color); font-weight: bold; }
+.event-log {
+    min-height: 100px; max-height: 180px; background-color: #222; border: 1px solid var(--border-color-very-dark);
+    padding: 10px; margin-bottom: 15px; font-size: 0.85em; overflow-y: auto;
+    border-radius: 4px; line-height: 1.45; flex-shrink: 0;
+}
+.event-log p { margin: 4px 0; word-break: break-word; }
+.event-log p::before { content: "> "; color: var(--text-muted-color); } /* Log prefix */
+#map-display { text-align: center; margin-bottom: 15px; flex-grow: 1; overflow-y: auto; padding: 5px;}
+#map-display > p { font-size: 1.1em; margin-bottom: 12px; font-weight: 500; }
+#map-display > p span { color: var(--accent-color); font-weight: bold;}
+#map-nodes-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;}
+#map-nodes-container button {
+    background-color: #5a5a5a; padding: 10px 12px;
+    width: calc(50% - 10px); /* Two buttons per row */
+    min-height: 50px; /* Ensure buttons have some height */
+    font-size: 0.9em;
+}
+#map-nodes-container button.locked { background-color: #718096; color: var(--text-darker-muted-color); }
+#map-nodes-container button.action-button {
+    background-color: var(--accent-color); color: var(--bg-dark-1);
+    font-weight: bold; width: calc(100% - 10px); /* Full width for actions */
+}
+.map-bottom-nav { display: flex; justify-content: space-around; padding-top: 12px; border-top: 1px solid var(--border-color-dark); flex-shrink: 0;}
+.map-bottom-nav button { width: auto; flex-grow: 1; margin: 0 4px; font-size: 0.9em; padding: 9px 5px; }
+
+
+/* Popups */
+.popup {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background-color: #383838; border: 1px solid var(--border-color-light);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.75); z-index: 1000;
+    padding: 20px 25px; border-radius: 8px; width: 90%; max-width: 380px;
+    box-sizing: border-box; display: flex; flex-direction: column;
+}
+.popup h3 { margin-top: 0; color: var(--accent-color); text-align: center; margin-bottom: 18px; font-size: 1.2em;}
+.popup .popup-content { margin-bottom: 15px; max-height: 60vh; overflow-y: auto; } /* Scrollable content area */
+.popup .item-grid { max-height: 220px; overflow-y: auto; margin-bottom:15px; background-color: var(--bg-dark-2); }
+.popup-actions { display: flex; justify-content: space-around; gap: 12px; margin-top:15px;}
+.popup-actions button { width: 100%; }
+
+
+/* Status Screen */
+#player-condition .body-parts p { margin: 7px 0; padding: 9px 12px; background-color: #333; border-radius: 4px; font-size:0.95em; display: flex; justify-content: space-between; align-items: center; }
+.body-parts .status-display { font-weight: bold; padding: 3px 6px; border-radius: 3px; display: inline-block; min-width: 50px; text-align: center; font-size: 0.9em; margin-left: 10px;}
+.body-parts .status-display.status-healthy { color: var(--success-color); background-color: rgba(104,211,145,0.1); }
+.body-parts .status-display.status-injured { color: var(--warning-color); background-color: rgba(255,213,79,0.1); }
+.body-parts .status-display.status-critical { color: var(--danger-color); background-color: rgba(245,101,101,0.1); }
+#medical-supplies h4 { margin-top: 20px; color: var(--accent-color); }
+
+
+/* Encounter & Combat */
+#encounter-info p, .combat-layout p { margin: 7px 0; font-size: 0.95em;}
+#encounter-info span, .combat-layout span { font-weight: bold; color: var(--accent-color); }
+.choice-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px;}
+.choice-buttons button { width: calc(50% - 10px); margin: 0; }
+.combat-layout { display: flex; justify-content: space-between; margin-bottom: 18px; font-size: 0.9em; gap: 12px;}
+.combat-player-status, .combat-enemy-status {
+    padding: 12px 15px; background-color: #333; border-radius: 4px;
+    flex-basis: 0; flex-grow: 1; /* Equal width */
+    border: 1px solid var(--border-color-dark);
+}
+.combat-player-status h4, .combat-enemy-status h4 { margin-top:0; margin-bottom: 8px; color: var(--text-muted-color); font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px;}
+#target-parts { margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;}
+#target-parts button { background-color: #525252; width: calc(33.33% - 8px); font-size: 0.85em; padding: 8px 5px; min-height: 40px;}
+#target-parts button:hover { background-color: #616161; }
+#target-parts button.selected { border: 2px solid var(--accent-color); background-color: #444; }
+#combat-skills button { width: calc(50% - 10px); font-size: 0.9em;}
+
+
+/* Mission Summary */
+.mission-summary { background-color: var(--bg-dark-3); padding: 15px; border-radius: 4px; margin-bottom:15px; border: 1px solid var(--border-color-dark);}
+.mission-summary p { margin: 8px 0; font-size: 1.05em; }
+.mission-summary span { font-weight: bold; color: var(--accent-color); }
+
+
+/* Mercenary Screen */
+.mercenary-card {
+    background-color: var(--bg-dark-3); padding: 15px; margin-bottom: 12px;
+    border-radius: 6px; border-left: 4px solid var(--text-muted-color);
+}
+.mercenary-card h4 { margin-top: 0; color: var(--text-muted-color); font-size: 1.1em; }
+.mercenary-card p { margin: 5px 0; font-size: 0.9em; }
+.mercenary-card button { width: auto; margin-right: 8px; font-size: 0.9em; padding: 7px 12px; margin-top: 10px; }
+
+
+/* Item Rarity Borders */
+.grid-item.item-common, .item-list li.item-common, .market-list-item.item-common { border-left-color: var(--item-common-color); }
+.grid-item.item-uncommon, .item-list li.item-uncommon, .market-list-item.item-uncommon { border-left-color: var(--item-uncommon-color); }
+.grid-item.item-rare, .item-list li.item-rare, .market-list-item.item-rare { border-left-color: var(--item-rare-color); }
+.grid-item.item-epic, .item-list li.item-epic, .market-list-item.item-epic { border-left-color: var(--item-epic-color); }
+.grid-item.item-legendary, .item-list li.item-legendary, .market-list-item.item-legendary { border-left-color: var(--item-legendary-color); }
+
+/* Market specific list item styling, if rarity is part of the class name added by JS */
+.market-list-item.item-common .item-name { color: var(--item-common-color); }
+.market-list-item.item-uncommon .item-name { color: var(--item-uncommon-color); }
+.market-list-item.item-rare .item-name { color: var(--item-rare-color); }
+.market-list-item.item-epic .item-name { color: var(--item-epic-color); }
+.market-list-item.item-legendary .item-name { color: var(--item-legendary-color); }
+
+
+.hidden { display: none !important; }

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>数据修仙：天穹边界 (完整版)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+
+        <!-- P5: 主界面 -->
+        <div id="main-screen" class="screen">
+            <header class="main-header">
+                <div class="player-stats-bar">
+                    <span>境界: <span id="player-level">数据炼气</span></span> <!-- 显示境界名称 -->
+                    <span>灵石: <span id="player-currency">1000</span></span>
+                </div>
+                <h1>天穹市 / 玄域霓都</h1>
+            </header>
+            <div class="character-display-area">
+                <p>[角色预览区 - GDD I.1 主世界]</p>
+                <div class="quick-equip-slots">
+                    <span>主武: <span id="main-weapon-display">-</span></span>
+                    <span>胸甲: <span id="chest-armor-display">-</span></span>
+                </div>
+            </div>
+            <div class="main-actions">
+                <button id="btn-goto-worldselect">下层世界 (GDD I.1)</button>
+                <button id="btn-goto-warehouse">仓库 / 背包 (GDD III.3)</button>
+                <button id="btn-goto-market">霓都黑市 (GDD V.5)</button>
+                <button id="btn-goto-mercenary">佣兵公会 (GDD IV.3)</button>
+                <button id="btn-goto-stronger">角色成长 (GDD III)</button>
+            </div>
+            <div class="fishing-area">
+                <p>放置类钓鱼小游戏 (GDD IV.1 - 暂未实现)</p>
+            </div>
+        </div>
+
+        <!-- P15: 仓库/背包 -->
+        <div id="warehouse-screen" class="screen hidden">
+            <header>
+                <h2>仓库 / 背包</h2>
+                <button class="back-button" data-target="main-screen">返回</button>
+            </header>
+            <div class="warehouse-tabs">
+                <button class="tab-button active" data-tab="tab-equipment">装备</button>
+                <button class="tab-button" data-tab="tab-items">道具/材料</button>
+                <button class="tab-button" data-tab="tab-safebox">安全箱 (P16)</button>
+            </div>
+            <div id="tab-equipment" class="tab-content active">
+                <h3>玩家装备槽位 (GDD III.3)</h3>
+                <div id="player-equipment-slots">
+                    <div><span class="slot-name">头部:</span> <span id="eq-head" class="item-equipped-name">-</span> <button class="unequip-btn danger-button" data-slot="head">卸下</button></div>
+                    <div><span class="slot-name">身体:</span> <span id="eq-body" class="item-equipped-name">-</span> <button class="unequip-btn danger-button" data-slot="body">卸下</button></div>
+                    <div><span class="slot-name">腿部:</span> <span id="eq-legs" class="item-equipped-name">-</span> <button class="unequip-btn danger-button" data-slot="legs">卸下</button></div>
+                    <div><span class="slot-name">脚部:</span> <span id="eq-feet" class="item-equipped-name">-</span> <button class="unequip-btn danger-button" data-slot="feet">卸下</button></div>
+                    <div><span class="slot-name">主武器:</span> <span id="eq-mainhand" class="item-equipped-name">-</span> <button class="unequip-btn danger-button" data-slot="mainhand">卸下</button></div>
+                    <div><span class="slot-name">副武器:</span> <span id="eq-offhand" class="item-equipped-name">-</span> <button class="unequip-btn danger-button" data-slot="offhand">卸下</button></div>
+                    <div><span class="slot-name">背包:</span> <span id="eq-backpack" class="item-equipped-name">-</span> <button class="unequip-btn danger-button" data-slot="backpack">卸下</button></div>
+                </div>
+                <h4>装备背包 (点击装备进行穿戴)</h4>
+                <div id="warehouse-equipment-items" class="item-grid"></div>
+            </div>
+            <div id="tab-items" class="tab-content hidden">
+                <h4>道具/材料背包 (点击消耗品可使用)</h4>
+                <div id="warehouse-consumable-items" class="item-grid"></div>
+            </div>
+            <div id="tab-safebox" class="tab-content hidden">
+                <h3>安全箱 (GDD II.1)</h3>
+                <p>当前规格: <span id="safebox-size-display">未选择</span> (容量: <span id="safebox-capacity-display">0</span>格)</p>
+                <button id="btn-select-safebox">选择/更换安全箱</button>
+                <div id="warehouse-safebox-items" class="item-grid"></div>
+                <p class="small-text">安全箱内物品在任务失败时通常不会丢失。</p>
+            </div>
+            <div class="player-detailed-stats" style="margin-top: 15px;">
+                <button id="btn-show-detailed-stats">查看详细属性 (GDD III.1)</button>
+                <div id="detailed-stats-panel" class="hidden">
+                    <p>力量: <span id="stat-str">10</span>, 敏捷: <span id="stat-agi">10</span>, 体质: <span id="stat-con">10</span></p>
+                    <p>感知: <span id="stat-per">10</span>, 智力: <span id="stat-int">10</span></p>
+                    <p>生命值: <span id="stat-hp">2000</span>/<span id="stat-maxhp">2000</span></p>
+                    <p>灵力/能量: <span id="stat-mp">100</span>/<span id="stat-maxmp">100</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- P16: 安全箱选择弹窗 -->
+        <div id="safebox-selection-popup" class="popup hidden">
+            <h3>选择安全箱规格</h3>
+            <div class="popup-content">
+                <button class="safebox-option" data-size="小号安全箱" data-capacity="4">小号安全箱 (2x2, 4格)</button>
+                <button class="safebox-option" data-size="中号安全箱" data-capacity="9">中号安全箱 (3x3, 9格)</button>
+                <button class="safebox-option" data-size="大号安全箱" data-capacity="16">大号安全箱 (4x4, 16格)</button>
+                <button class="safebox-option" data-size="超大号安全箱" data-capacity="25">超大号安全箱 (5x5, 25格)</button>
+            </div>
+            <div class="popup-actions">
+                <button id="btn-close-safebox-popup" class="danger-button">取消</button>
+            </div>
+        </div>
+
+        <!-- P2, P6: 市场 -->
+        <div id="market-screen" class="screen hidden">
+            <header>
+                <h2>霓都黑市</h2>
+                <button class="back-button" data-target="main-screen">返回</button>
+            </header>
+            <div class="market-tabs">
+                <button class="tab-button active" data-tab="tab-buy">购买 (GDD P6)</button>
+                <button class="tab-button" data-tab="tab-sell">出售 (GDD P2)</button>
+            </div>
+            <div id="tab-buy" class="tab-content active">
+                <!-- 搜索和分类暂时移除，简化UI，未来可加回 -->
+                <h3>可购买商品</h3>
+                <ul id="market-buy-list" class="item-list"></ul>
+            </div>
+            <div id="tab-sell" class="tab-content hidden">
+                <h3>出售你的物品</h3>
+                <p class="small-text">从你的仓库选择物品出售 (将显示可被市场回收的物品)</p>
+                <div id="market-sell-list" class="item-grid"></div>
+            </div>
+        </div>
+
+        <!-- P10: 雇佣兵 -->
+        <div id="mercenary-screen" class="screen hidden">
+            <header>
+                <h2>佣兵公会</h2>
+                <button class="back-button" data-target="main-screen">返回</button>
+            </header>
+            <h3>可雇佣列表 (GDD IV.3)</h3>
+            <div id="mercenary-list" style="flex-grow:1; overflow-y:auto;">
+                <!-- JS动态填充 -->
+            </div>
+            <button disabled style="margin-top:10px;">佣兵突破 (GDD IV.3 - 暂未实现)</button>
+        </div>
+
+        <!-- GDD III: 角色成长系统 (变强) -->
+        <div id="character-progression-screen" class="screen hidden">
+            <header>
+                <h2>角色成长</h2>
+                <button class="back-button" data-target="main-screen">返回</button>
+            </header>
+            <div class="progression-tabs">
+                <button class="tab-button active" data-tab="tab-cultivation">修炼体系 (境界)</button>
+                <button class="tab-button" data-tab="tab-gongfa">功法系统</button>
+                <button class="tab-button" data-tab="tab-genetics">改造体系 (血统)</button>
+                <button class="tab-button" data-tab="tab-cybernetics">改造体系 (义体)</button>
+                <button class="tab-button" data-tab="tab-skilltree">强化系统 (技能树)</button>
+            </div>
+            <div id="tab-cultivation" class="tab-content active">
+                <h3>修炼体系 (GDD III.4)</h3>
+                <p>当前境界: <span id="prog-cultivation-rank">数据炼气</span></p>
+                <p>经验值: <span id="prog-cultivation-exp">0</span> / <span id="prog-cultivation-exp-needed">1000</span></p>
+                <button id="btn-breakthrough-cultivation" disabled>突破境界 (条件未满足)</button>
+                <p class="small-text">通过战斗、完成任务和探索发现获取经验值。</p>
+            </div>
+            <div id="tab-gongfa" class="tab-content hidden">
+                <h3>功法系统 (GDD III.5)</h3>
+                <p>已装备/激活功法:</p>
+                <ul id="prog-gongfa-list">
+                    <!-- JS 动态填充 -->
+                </ul>
+                <p class="small-text">学习新功法：通过任务奖励、副本掉落（残页合成）、NPC学习。</p>
+                <button disabled>管理功法 (暂未实现)</button>
+            </div>
+            <div id="tab-genetics" class="tab-content hidden">
+                <h3>改造体系 - 血统 (GDD III.6)</h3>
+                <p>当前血统: <span id="prog-genetics-active">无</span></p>
+                <p class="small-text">可用血统样本 (来自仓库 - 暂未实现列表):</p>
+                <ul id="prog-genetics-samples">
+                    <li>炎魔血统样本 x0</li>
+                    <li>虚空虫族样本 x0</li>
+                </ul>
+                <button disabled>激活/更换血统 (暂未实现)</button>
+            </div>
+            <div id="tab-cybernetics" class="tab-content hidden">
+                <h3>改造体系 - 义体 (GDD III.6)</h3>
+                <p>义体槽位:</p>
+                <ul id="prog-cybernetics-slots">
+                    <!-- JS 动态填充 -->
+                </ul>
+                <p class="small-text">可用义体模组 (来自仓库 - 暂未实现列表):</p>
+                <button disabled>安装/更换义体 (暂未实现)</button>
+            </div>
+            <div id="tab-skilltree" class="tab-content hidden">
+                <h3>强化系统 - 技能树 (GDD III.7)</h3>
+                <p>可用技能点: <span id="prog-skilltree-points">0</span></p>
+                <p class="small-text">技能树路径 (可视化暂未实现):</p>
+                <ul>
+                    <li>数据修炼 (专注法术与能量)</li>
+                    <li>义体强化 (专注科技与物理改造)</li>
+                    <li>战斗专精 (专注武器与战术)</li>
+                </ul>
+                <button disabled>分配技能点 (暂未实现)</button>
+            </div>
+        </div>
+
+
+        <!-- P18, P12: 世界选择 -->
+        <div id="world-selection-screen" class="screen hidden">
+            <header>
+                <h2>下层世界选择 (GDD I.1)</h2>
+                <button class="back-button" data-target="main-screen">返回</button>
+            </header>
+            <div id="world-list" style="flex-grow:1; overflow-y:auto; padding-right:5px;"> <!-- Allow scrolling for world list -->
+                <!-- 世界列表将由JS动态填充 -->
+            </div>
+        </div>
+
+        <!-- P13: 出战准备 -->
+        <div id="preparation-screen" class="screen hidden">
+            <header>
+                <h2 id="prep-world-name">出战准备</h2>
+                <button class="back-button" data-target="world-selection-screen">返回</button>
+            </header>
+            <div class="prep-sections" style="flex-grow:1; overflow-y:auto;">
+                <section id="prep-loadout">
+                    <h3>当前配装 (GDD II.1)</h3>
+                    <p>主武器: <span id="prep-mainhand">-</span></p>
+                    <p>身体护甲: <span id="prep-armor">-</span></p>
+                    <p>背包: <span id="prep-backpack">-</span></p>
+                    <p>安全箱: <span id="prep-safebox">-</span> <span class="small-text">(物品在任务失败时通常不丢失)</span></p>
+                    <button id="btn-change-loadout">调整装备/道具 (进入仓库)</button>
+                </section>
+                <section id="prep-requirements">
+                    <h3>战备要求 (GDD II.1)</h3>
+                    <p id="prep-req-text">此世界无特殊要求</p>
+                    <p>携带总价值: <span id="prep-value">0</span> 灵石</p>
+                    <p>消耗: 虚空座标 x<span id="prep-coord-cost">1</span>, 灵能燃料 x<span id="prep-fuel-cost">10</span></p>
+                </section>
+            </div>
+            <div class="prep-actions" style="flex-shrink:0; margin-top:10px;">
+                <button id="btn-save-loadout" disabled>保存当前配装 (装备卷 - 暂未实现)</button>
+                <button id="btn-start-mission" class="cta-button">出发！</button>
+            </div>
+        </div>
+
+        <!-- P14: 地图探索 -->
+        <div id="map-screen" class="screen hidden">
+            <header class="map-header">
+                <div class="map-world-name">当前世界: <span id="map-current-world-name">未知</span></div>
+                <div class="player-map-status">
+                    <span>HP: <span id="map-player-hp">2000</span>/<span id="map-player-maxhp">2000</span></span> | <span>移动次数: <span id="map-moves">0</span></span>
+                </div>
+            </header>
+            <div id="map-event-log" class="event-log"></div>
+            <div id="map-display">
+                <p>当前位置: <span id="map-current-location-name">起点</span></p>
+                <div id="map-nodes-container"></div>
+            </div>
+            <div class="map-bottom-nav">
+                <button id="map-btn-status">状态 (P17)</button>
+                <button id="map-btn-inventory">背包 (P15)</button>
+                <button id="map-btn-tasks">任务 (P11)</button>
+                <button id="map-btn-more" disabled>图鉴/更多 (暂未实现)</button>
+            </div>
+        </div>
+
+        <!-- P1, P8: 搜索结果 / 战斗掉落 -->
+        <div id="loot-popup" class="popup hidden">
+            <h3 id="loot-popup-title">发现物品</h3>
+            <div class="popup-content">
+                <p>总价值: <span id="loot-value">0</span> 灵石</p>
+                <div id="loot-items-grid" class="item-grid"></div>
+            </div>
+            <div class="popup-actions">
+                <button id="btn-loot-take-all" class="cta-button">全部拾取</button>
+                <button id="btn-loot-close">关闭</button>
+            </div>
+        </div>
+
+        <!-- P17: 角色状态 -->
+        <div id="status-screen" class="screen hidden">
+            <header>
+                <h2>角色状态 (GDD III.2)</h2>
+                <button class="back-button" data-target="map-screen">返回地图</button>
+            </header>
+            <div id="player-condition" style="flex-grow:1; overflow-y:auto;">
+                <p>总体生命: <span id="status-total-hp">2000</span> / <span id="status-total-maxhp">2000</span></p>
+                <div class="body-parts">
+                    <p>头部: <span id="part-head-status" class="status-display status-healthy">健康</span> (<span id="part-head-hp" class="hp-percent">100</span>%)</p>
+                    <p>躯干: <span id="part-torso-status" class="status-display status-healthy">健康</span> (<span id="part-torso-hp" class="hp-percent">100</span>%)</p>
+                    <p>左臂: <span id="part-larm-status" class="status-display status-healthy">健康</span> (<span id="part-larm-hp" class="hp-percent">100</span>%)</p>
+                    <p>右臂: <span id="part-rarm-status" class="status-display status-healthy">健康</span> (<span id="part-rarm-hp" class="hp-percent">100</span>%)</p>
+                    <p>左腿: <span id="part-lleg-status" class="status-display status-healthy">健康</span> (<span id="part-lleg-hp" class="hp-percent">100</span>%)</p>
+                    <p>右腿: <span id="part-rleg-status" class="status-display status-healthy">健康</span> (<span id="part-rleg-hp" class="hp-percent">100</span>%)</p>
+                </div>
+            </div>
+            <div id="medical-supplies" style="margin-top:15px; flex-shrink:0;">
+                <h4>可用医疗品 (GDD III.2 药品系统):</h4>
+                <ul id="available-meds-list" class="item-list"></ul>
+            </div>
+        </div>
+
+        <!-- P11: 任务弹窗 -->
+        <div id="tasks-popup" class="popup hidden">
+            <h3>当前任务 (GDD IV.6)</h3>
+            <div class="popup-content">
+                <ul id="task-list"></ul>
+            </div>
+            <div class="popup-actions">
+                <button id="btn-close-tasks-popup">关闭</button>
+            </div>
+        </div>
+
+        <!-- P3, P9: 遭遇事件 / 战斗前抉择 -->
+        <div id="encounter-screen" class="screen hidden">
+            <header>
+                <h2 id="encounter-title">遭遇！</h2>
+                <!-- No back button here, must make a choice -->
+            </header>
+            <div id="encounter-info">
+                <p id="encounter-description">你发现了 [敌人名称]!</p>
+                <p>距离: <span id="encounter-distance">--</span>米</p>
+                <p>敌人装备/特征: <span id="encounter-enemy-gear">--</span></p>
+            </div>
+            <h3 style="margin-top:20px;">选择行动 (GDD II.3)</h3>
+            <div id="encounter-options" class="choice-buttons"></div>
+        </div>
+
+        <!-- P7: 战斗瞄准 / 战斗界面 -->
+        <div id="combat-screen" class="screen hidden">
+            <header>
+                <h2 id="combat-target-name">战斗中 vs [敌人名称]</h2>
+                <!-- No back button in active combat usually -->
+            </header>
+            <div class="combat-layout">
+                <div class="combat-player-status">
+                    <h4>玩家状态</h4>
+                    <p>HP: <span id="combat-player-hp">2000</span> | MP: <span id="combat-player-mp">100</span></p>
+                    <p>武器: <span id="combat-player-weapon">基础手枪</span> (优势射程: <span id="combat-weapon-range">15m</span>)</p>
+                </div>
+                <div class="combat-enemy-status">
+                    <h4>敌人状态</h4>
+                    <p>HP: <span id="combat-enemy-hp">100</span>% (<span id="combat-enemy-actual-hp">--</span>)</p>
+                    <p>当前距离: <span id="combat-current-distance">20m</span></p>
+                </div>
+            </div>
+            <div id="combat-log" class="event-log" style="flex-grow:1;"></div>
+            <div id="combat-actions" style="flex-shrink:0; margin-top:10px;">
+                <h4>选择攻击部位 (GDD II.3 部位打击):</h4>
+                <div id="target-parts" class="choice-buttons"></div>
+                <div id="combat-skills" style="margin-top:10px;">
+                    <button disabled>技能1 (暂未实现)</button>
+                    <button disabled>技能2 (暂未实现)</button>
+                </div>
+                <button id="btn-combat-auto" style="margin-top:10px;">自动战斗 (切换)</button>
+                <button id="btn-combat-escape" class="danger-button" style="margin-top:5px;">尝试逃跑</button>
+            </div>
+        </div>
+
+        <!-- P19: 撤离确认弹窗 -->
+        <div id="evacuation-confirm-popup" class="popup hidden">
+            <h3>确认撤离？ (P19)</h3>
+            <div class="popup-content">
+                <p>一旦开始撤离，可能需要防守一段时间 (当前版本简化为直接判定)。</p>
+            </div>
+            <div class="popup-actions">
+                <button id="btn-confirm-evac" class="cta-button">是</button>
+                <button id="btn-cancel-evac" class="danger-button">否</button>
+            </div>
+        </div>
+
+        <!-- P20: 成功撤离 / 任务结算 -->
+        <div id="mission-success-screen" class="screen hidden">
+            <header>
+                <h2>成功撤离 (P20)</h2>
+            </header>
+            <div class="mission-summary">
+                <p>本局收获总价值: <span id="success-total-value">0</span> 灵石</p>
+                <p>本局击杀: <span id="success-kills">0</span></p>
+                <p>获得成就: <span id="success-achievements">无</span></p>
+                <p>获得经验: <span id="success-exp">0</span> EXP</p>
+            </div>
+            <div class="mission-loot-tabs">
+                <button class="tab-button active" data-tab="tab-loot-backpack">带回物品 (背包)</button>
+                <button class="tab-button" data-tab="tab-loot-safebox">安全箱物品</button>
+            </div>
+            <div id="tab-loot-backpack" class="tab-content active item-grid"></div>
+            <div id="tab-loot-safebox" class="tab-content hidden item-grid"></div>
+            <button id="btn-return-to-main" class="cta-button" style="margin-top:15px;">回归主世界</button>
+        </div>
+
+        <!-- AA: 任务失败 -->
+        <div id="mission-failure-screen" class="screen hidden">
+            <header>
+                <h2>任务失败 (AA)</h2>
+            </header>
+            <div class="mission-summary">
+                <p>你已在行动中阵亡...</p>
+                <p>背包内非安全箱物品已丢失大部分！</p>
+                <p>安全箱物品已保留。</p>
+                <p>经验值损失: <span id="failure-exp-lost">0</span> EXP (暂未实现)</p>
+            </div>
+            <button id="btn-failure-return-to-main" class="cta-button" style="margin-top:15px;">返回主世界</button>
+        </div>
+
+    </div> <!-- End of #game-container -->
+
+    <script src="game_data.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
